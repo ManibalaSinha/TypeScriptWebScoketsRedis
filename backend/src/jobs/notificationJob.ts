@@ -1,35 +1,17 @@
 // src/jobs/notificationJob.ts
-import amqp from 'amqplib';
+import amqp from "amqplib";
 
-const QUEUE_NAME = 'notifications';
-
-export const sendNotification = async (message: any) => {
-  const conn = await amqp.connect('amqp://localhost');
+export const sendNotification = async (message: string) => {
+  const conn = await amqp.connect(process.env.RABBITMQ_URL!);
   const channel = await conn.createChannel();
-  await channel.assertQueue(QUEUE_NAME, { durable: true });
-  channel.sendToQueue(QUEUE_NAME, Buffer.from(JSON.stringify(message)), { persistent: true });
-  console.log('Job sent:', message);
-  await channel.close();
-  await conn.close();
+  const queue = "notifications";
+
+  await channel.assertQueue(queue, { durable: true });
+  channel.sendToQueue(queue, Buffer.from(message), { persistent: true });
+
+  console.log("Notification sent:", message);
+  setTimeout(() => {
+    channel.close();
+    conn.close();
+  }, 500);
 };
-
-// Worker (worker.ts)
-import amqp from 'amqplib';
-
-const QUEUE_NAME = 'notifications';
-
-const startWorker = async () => {
-  const conn = await amqp.connect('amqp://localhost');
-  const channel = await conn.createChannel();
-  await channel.assertQueue(QUEUE_NAME, { durable: true });
-
-  channel.consume(QUEUE_NAME, (msg) => {
-    if (msg) {
-      const data = JSON.parse(msg.content.toString());
-      console.log('Processing job:', data);
-      // retry mechanism
-      channel.ack(msg);
-    }
-  });
-};
-startWorker();

@@ -11,9 +11,10 @@ dotenv.config();
 connectDB(); // Connect to DB
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-// Routes
+// Routescd .
 app.get('/', (_req, res) => res.send('API is running'));
 app.use('/auth', authRoutes);  
 app.use('/patients', patientRoutes);

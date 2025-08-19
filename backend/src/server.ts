@@ -1,6 +1,7 @@
+import app from "./app";
 import http from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
-import app from "./app";
+
 //import dotenv from "dotenv";
 //dotenv.config();
 

@@ -1,4 +1,4 @@
-# TypeScript WebSockets + Redis Backend
+# TypeScript WebSockets + Redis Backend, Frontend
 
 A modern, production-ready backend built with **TypeScript**, **WebSockets**, and **Redis**, designed for real-time communication, background job processing, and scalable deployments.
 Perfect for applications requiring live updates, streaming uploads, and distributed task handling.
@@ -92,4 +92,5 @@ npm test
 ##  License
 
 MIT © 2025 [Manibala Sinha](https://github.com/ManibalaSinha)
+
 

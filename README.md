@@ -85,12 +85,13 @@ npm test
 
 ##  Roadmap
 
-* [ ] Add GraphQL API option
-* [ ] Add multi-file chunked uploads
-* [ ] Add CI/CD pipeline templates
+* [ ] Adding GraphQL API 
+* [ ] Adding multi-file chunked uploads
+* [ ] Adding CI/CD pipeline templates
 
 ##  License
 
 MIT © 2025 [Manibala Sinha](https://github.com/ManibalaSinha)
+
 
 

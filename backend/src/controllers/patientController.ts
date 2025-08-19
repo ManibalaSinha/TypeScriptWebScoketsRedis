@@ -1,6 +1,7 @@
 // src/controllers/patientController.ts
 import { Request, Response } from 'express';
-import { Patient } from '../models/patientModel';
+import Patient from "../models/Patient";
+//import { Patient } from '../models/patientModel';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { CreatePatientDto } from '../dtos/createPatient.dto';
@@ -26,34 +27,14 @@ export const createPatient = async (req: Request, res: Response) => {
 export const getPatients = async (req: Request, res: Response) => {
   try {
     const patients = await Patient.find();
-    return res.status(200).json(patients);
+    res.json(patients);
+    //return res.status(200).json(patients);
   } catch (err: any) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-// Additional CRUD: getPatientById, updatePatient, deletePatient
-
-export const updatePatient = async (req: Request, res: Response) => {
-  try {
-    const updated = await patientService.updatePatient(req.params.id, req.body);
-    if (!updated) return res.status(404).json({ error: 'Patient not found' });
-    res.json(updated);
-  } catch (err: any) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-export const deletePatient = async (req: Request, res: Response) => {
-  try {
-    const deleted = await patientService.deletePatient(req.params.id);
-    if (!deleted) return res.status(404).json({ error: 'Patient not found' });
-    res.status(204).send();
-  } catch (err: any) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-// Additional CRUD: getPatientById,
+// Additional CRUD: getPatientById
 export const getPatientById = async (req: Request, res: Response) => {
   try {
     const patient = await Patient.findById(req.params.id);
@@ -63,3 +44,25 @@ export const getPatientById = async (req: Request, res: Response) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+export const updatePatient = async (req: Request, res: Response) => {
+  try {
+    const patient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new:true, runValidators:true, });
+
+    if (!patient) return res.status(404).json({ error: 'Patient not found' });
+    res.json(patient);
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+export const deletePatient = async (req: Request, res: Response) => {
+  try {
+    const deleted = await Patient.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Patient not found' });
+    res.status(204).send();
+  } catch (err: any) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+

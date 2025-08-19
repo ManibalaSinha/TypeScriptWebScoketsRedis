@@ -5,7 +5,7 @@ import WebSocket, { WebSocketServer } from 'ws';
 //import dotenv from "dotenv";
 //dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // HTTP server
 const server = http.createServer(app);

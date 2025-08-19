@@ -1,36 +1,26 @@
+import http from 'http';
+import WebSocket, { WebSocketServer } from 'ws';
 import app from "./app";
-import dotenv from "dotenv";
-dotenv.config();
+//import dotenv from "dotenv";
+//dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// HTTP server
+const server = http.createServer(app);
+
+// WebSocket server
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  console.log('New client connected');
+  ws.send(JSON.stringify({ message: 'Welcome to WebSocket server' }));
+
+  ws.on('message', (data) => {
+    console.log('Received:', data.toString());
+  });
+
+  ws.on('close', () => console.log('Client disconnected'));
 });
 
-/* import express, {Request, Response} from "express";
-
-const app = express();
-const port = 3000;
-
-interface User {
-   id: number;
-   name: string;
-}
-
-let users: User[] = [];
-let nextId = 1;
-
-app.get("/users", (req: Request, res: Response) => {
-   res.json(users);
-   
-});
-
-app.use(express.json());
-app.get("/", (req: Request, res: Response) => {
-   res.send("HEllo Backend");
-});
-app.listen(port, ()=>{
-   console.log('Server runnign at http://localhost:${port} ');
-});
- */
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -8,14 +8,14 @@ import { CreatePatientDto } from "../dtos/createPatient.dto";
 
 const router = express.Router();
 
-router.use(authMiddleware); // Protect all patient routes
+router.use(authMiddleware()); // Protect all patient routes
 
-router.post('/', patientController.createPatient);
-router.get('/', patientController.getPatients);
+// CRUD routes
+router.post('/', validateRequest(CreatePatientDto), createPatient);
+router.get('/', getPatients);
 router.get('/:id', getPatientById);
 router.put('/:id', updatePatient);
-router.delete('/:id', deletePatient);
-router.post("/patients", authMiddleware, createPatient);
-router.get("/patients", authMiddleware, getPatients);
+router.delete('/:id', authMiddleware(['admin']), deletePatient);
+
 
 export default router;

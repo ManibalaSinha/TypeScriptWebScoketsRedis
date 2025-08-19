@@ -3,24 +3,26 @@ import { Server as HttpServer } from 'http';
 import { Server as SocketServer } from 'socket.io';
 import redisAdapter from 'socket.io-redis';
 
-export const initSocket = (httpServer: HttpServer) => {
-  const io = new SocketServer(httpServer, { cors: { origin: '*' } });
+import { Server } from "socket.io";
+import Redis from "ioredis";
 
-  // Redis adapter for multiple server instances
-  io.adapter(redisAdapter({ host: 'localhost', port: 6379 }));
+const pubClient = new Redis();
+const subClient = new Redis();
 
-  // Rooms for patient-specific streams
-  io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id);
+export const initSocket = (server: any) => {
+  const io = new Server(server, { cors: { origin: "*" } });
 
-    socket.on('joinPatientRoom', (patientId) => {
-      socket.join(`patient_${patientId}`);
-    });
+  io.on("connection", (socket) => {
+    console.log("Client connected", socket.id);
 
-    socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket.id);
-    });
+    socket.on("joinRoom", (room) => socket.join(room));
+    socket.on("leaveRoom", (room) => socket.leave(room));
   });
 
-  return io;
+  // Listen Redis pub messages
+  subClient.subscribe("patient-updates", () => {
+    subClient.on("message", (channel, message) => {
+      io.emit("patient-update", JSON.parse(message));
+    });
+  });
 };

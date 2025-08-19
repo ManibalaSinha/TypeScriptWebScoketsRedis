@@ -1,4 +1,5 @@
 // src/controllers/patientController.ts
+import { io } from '../server';
 import { Request, Response } from 'express';
 import Patient from "../models/Patient";
 //import { Patient } from '../models/patientModel';
@@ -17,8 +18,13 @@ export const createPatient = async (req: Request, res: Response) => {
   }
   
   try {
-    const patient = await Patient.create(dto);
-    return res.status(201).json(patient);
+    const patient = await Patient.create(req.body);
+    
+    // Broadcast real-time update to all clients in 'patients' room
+     io.to('patients').emit('patientCreated', patient);
+
+     res.status(201).json(patient);
+     return res.status(201).json(patient);
   } catch (err: any) {
     return res.status(500).json({ message: err.message });
   }

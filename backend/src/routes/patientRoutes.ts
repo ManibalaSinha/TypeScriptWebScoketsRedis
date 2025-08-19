@@ -15,6 +15,7 @@ router.post('/', validateRequest(CreatePatientDto), createPatient);
 router.get('/', getPatients);
 router.get('/:id', getPatientById);
 router.put('/:id', updatePatient);
+router.get('/patients', authMiddleware(['admin', 'doctor']), getPatients);
 router.delete('/:id', authMiddleware(['admin']), deletePatient);
 
 

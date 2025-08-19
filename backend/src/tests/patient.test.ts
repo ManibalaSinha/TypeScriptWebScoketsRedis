@@ -1,15 +1,24 @@
 // src/tests/patient.test.ts
-import request from "supertest";
-import app from "../app";
+import request from 'supertest';
+import app from '../app';
+import mongoose from 'mongoose';
 
-describe("Patient API", () => {
-  it("should get patients (authenticated)", async () => {
-    const token = "valid-jwt-token";
-    const res = await request(app)
-      .get("/patients")
-      .set("Authorization", `Bearer ${token}`);
+describe('Patient Routes', () => {
+  beforeAll(async () => {
+    await mongoose.connect(process.env.MONGO_URI!);
+  });
 
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty("patients");
+  afterAll(async () => {
+    await mongoose.disconnect();
+  });
+
+  it('should create a patient', async () => {
+    const res = await request(app).post('/patients').send({
+      name: 'John Doe',
+      email: 'john@example.com',
+      phone: '1234567890'
+    });
+    expect(res.status).toBe(201);
+    expect(res.body.name).toBe('John Doe');
   });
 });

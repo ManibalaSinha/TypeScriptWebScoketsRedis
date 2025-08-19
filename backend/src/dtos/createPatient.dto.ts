@@ -16,4 +16,5 @@ export class CreatePatientDto {
   @Min(30)
   @Max(200)
   heartRate!: number;
+  phone!:string;
 }

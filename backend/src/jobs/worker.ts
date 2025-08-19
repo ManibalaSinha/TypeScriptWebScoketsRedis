@@ -1,16 +1,26 @@
-import amqp from "amqplib";
+// src/jobs/worker.ts
+import amqp from 'amqplib';
 
-const runWorker = async () => {
-  const conn = await amqp.connect(process.env.RABBITMQ_URL!);
+async function startWorker() {
+  const conn = await amqp.connect('amqp://localhost');
   const channel = await conn.createChannel();
-  await channel.assertQueue("notifications", { durable: true });
+  const queue = 'notifications';
+  await channel.assertQueue(queue, { durable: true });
 
-  channel.consume("notifications", (msg) => {
+  channel.consume(queue, (msg) => {
     if (msg) {
-      console.log("Processing:", msg.content.toString());
-      channel.ack(msg);
+      const data = JSON.parse(msg.content.toString());
+      console.log('Processing job:', data);
+      // Retry mechanism: wrap in try/catch
+      try {
+        // sendEmail(data) or any async operation
+        channel.ack(msg);
+      } catch (err) {
+        console.error('Job failed, will retry', err);
+        channel.nack(msg, false, true); // retry
+      }
     }
   });
-};
+}
 
-runWorker();
+startWorker();

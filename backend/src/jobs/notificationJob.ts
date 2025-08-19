@@ -2,7 +2,7 @@
 import amqp from "amqplib";
 
 export const sendNotification = async (message: string) => {
-  const conn = await amqp.connect(process.env.RABBITMQ_URL!);
+  const conn = await amqp.connect('amqp://localhost');
   const channel = await conn.createChannel();
   const queue = "notifications";
 

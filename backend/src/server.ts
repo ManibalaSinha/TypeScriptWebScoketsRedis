@@ -3,9 +3,6 @@ import http from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import { initSocket } from "./socket";
 
-//import dotenv from "dotenv";
-//dotenv.config();
-
 const PORT = process.env.PORT || 5000;
 
 // HTTP server

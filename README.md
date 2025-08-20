@@ -1,97 +1,118 @@
-# TypeScript WebSockets + Redis Backend, Frontend
+#  HealthConnect Platform – Backend
 
-A modern, production-ready backend built with **TypeScript**, **WebSockets**, and **Redis**, designed for real-time communication, background job processing, and scalable deployments.
-Perfect for applications requiring live updates, streaming uploads, and distributed task handling.
+A **scalable, secure, real-time healthcare platform backend** built with **Node.js, Express, TypeScript, PostgreSQL, Redis, RabbitMQ, and WebSockets**.
+It powers patient management, real-time updates, secure authentication with OIDC, and async background job processing for notifications & reports.
+
+---
 
 ##  Features
 
-* ** Streaming File Uploads** – Supports large file handling via `multer` or Node.js streams.
-* ** WebSocket Support** – Real-time event broadcasting with `socket.io`.
-* ** Async Jobs** – Background processing with `RabbitMQ` or `Bull` queues.
-* ** Authentication** – Secure user auth with **JWT** or **OpenID Connect**.
-* ** Docker & Kubernetes** – Ready-to-deploy containerized setup.
-* ** Testing** – Unit & integration tests with **Jest** + **Supertest**.
+* **Authentication & Security**
+
+  * OpenID Connect (OIDC) + JWT
+  * Role-Based Access Control (RBAC) for Admin, Doctor, Nurse
+  * Validation & centralized error handling
+
+* **Real-Time Communication**
+
+  * WebSocket support with **Redis Pub/Sub**
+  * Patient-specific channels (doctors/nurses instantly see updates)
+
+* **Asynchronous Processing**
+
+  * **RabbitMQ** for background jobs
+  * Notification service (email/SMS)
+  * Report generation with retry + DLQ
+
+* **Robust Data Layer**
+
+  * PostgreSQL / MongoDB models for Patients, Users, Reports
+  * Services architecture for clean business logic
+
+* **Testing**
+
+  * Unit tests (services)
+  * Integration tests (routes, WebSocket, RabbitMQ)
+
+---
+
+##  Architecture
+
+```mermaid
+flowchart TD
+    A[Client App] -->|REST / WebSocket| B[Express API]
+    B --> C[Middleware: Auth + RBAC + Validation]
+    C --> D[Controllers]
+    D --> E[Services]
+    E -->|SQL/NoSQL| F[(Database)]
+    E -->|Publish Events| G[WebSockets + Redis]
+    E -->|Enqueue Jobs| H[RabbitMQ]
+    H --> I[Workers: Reports + Notifications]
+```
+
+---
+
+##  Project Structure
+
+```
+/project-root
+│── app.ts                  # Entry point (routes, db, sockets, jobs)
+│── server.ts               # Starts server
+│── config/                 # DB, Redis, RabbitMQ, OIDC configs
+│── middleware/             # Auth, RBAC, validation, error handling
+│── routes/                 # REST API routes
+│── controllers/            # Handle requests & responses
+│── services/               # Core business logic
+│── models/                 # DB schemas/models
+│── sockets/                # WebSocket setup
+│── jobs/                   # Background workers
+│── tests/                  # Unit & integration tests
+│── utils/                  # Logger, constants
+```
+
+---
+
+##  Flow Example: Patient Update
+
+1. Doctor updates patient record → `PUT /patients/:id`
+2. Request passes through:
+
+   * `auth.ts` (JWT/OIDC validation)
+   * `rbac.ts` (only doctors can edit patients)
+   * `validation.ts` (input check)
+3. `patientController.ts` → `patientService.ts` updates DB
+4. Service:
+
+   * Triggers WebSocket via **Redis** (notify connected clients)
+   * Enqueues **RabbitMQ** job for notification (SMS/email)
+5. Clients instantly see updates in their dashboard
+
+---
+
+##  Testing
+
+* **Unit Tests:** Validate services independently
+* **Integration Tests:** Test API + DB + WebSockets + Jobs together
+
+---
 
 ##  Tech Stack
 
-* **Backend Framework** – Node.js + Express + TypeScript
-* **Real-Time Layer** – Socket.io
-* **Database** – MongoDB (or configurable)
-* **Cache & Pub/Sub** – Redis
-* **Job Queue** – Bull or RabbitMQ
-* **Auth** – JWT / OpenID Connect
-* **Containerization** – Docker + Kubernetes
-* **Testing** – Jest, Supertest
+* **Backend:** Node.js, Express, TypeScript
+* **Database:** PostgreSQL / MongoDB
+* **Messaging:** RabbitMQ, Redis
+* **Auth:** OpenID Connect (OIDC), JWT
+* **Real-Time:** WebSockets + Redis Pub/Sub
+* **Testing:** Jest / Mocha + Supertest
 
-##  Installation
+---
 
-```bash
-git clone https://github.com/ManibalaSinha/TypeScriptWebScoketsRedis.git
-cd TypeScriptWebScoketsRedis/backend
-npm install
-```
+##  Next
 
-##  Environment Variables
+* [ ] Adding **API Gateway** (for multi-service routing)
+* [ ] Adding **Kubernetes Deployment** (scalability)
+* [ ] Implementing **CI/CD pipeline** with GitHub Actions
+* [ ] Expanding **Monitoring & Logging** with Prometheus + Grafana
 
-Create a `.env` file in the `backend` directory:
-
-```env
-PORT=3000
-MONGODB_URI=mongodb://localhost:27017/mydb
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=your-secret
-```
-
-##  Running the App
-
-**Development Mode:**
-
-```bash
-npx ts-node-dev src/server.ts
-```
-
-**Production Mode:**
-
-```bash
-npm run build
-npm start
-```
-
-##  WebSocket Usage
-
-Example client connection:
-
-```javascript
-const socket = io("http://localhost:3000");
-socket.on("connect", () => {
-  console.log("Connected to server");
-});
-socket.on("vitals", (data) => {
-  console.log("Vitals update:", data);
-});
-```
-
-##  Docker Support
-
-```bash
-docker-compose up --build
-```
-
-##  Running Tests
-
-```bash
-npm test
-```
-
-##  Roadmap
-
-* [ ] Adding GraphQL API 
-* [ ] Adding multi-file chunked uploads
-* [ ] Adding CI/CD pipeline templates
-
-##  License
-
-MIT © 2025 [Manibala Sinha](https://github.com/ManibalaSinha)
-
-
-
+---
+**backend engineering expertise** in scalable microservice architecture, real-time data, and secure healthcare-grade systems.

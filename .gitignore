@@ -1,9 +1,15 @@
 # dependencies
 node_modules
+backend/node_modules/
+frontend/node_modules/
 
 # environment variables
 .env
 backend/.env
+<<<<<<< HEAD
+=======
+frontend/.env
+>>>>>>> e477ca3 (gitignore)
 .env.*
 !.env.example
 
@@ -17,6 +23,7 @@ out
 coverage
 
 # logs
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
